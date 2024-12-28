@@ -7,23 +7,28 @@ export interface IProduct {
     image: string;
 }
 
-export interface IUser {
+export interface IOrderForm {
     method: string; 
     address: string;
     email: string;
     telephone: number;
 }
 
-export interface IOrder {
+export interface IOrder extends IOrderForm {
     id: string;
     total: number;
+}
+
+export interface IItems {
+    items: IProduct[];
+    total: number | null;
 }
 
 export interface IProductsData {
     products: IProduct[];
     preview: string | null;
-    fillProducts(products: IProduct[]): IProduct[];
-    getProducts(productsId: string): IProduct;
+    // fillProducts(products: IProduct[]): void;
+    // getProducts(productsIds: string[]): IProduct[];
 }
 
 export interface IOrderData {
@@ -32,5 +37,13 @@ export interface IOrderData {
     deleteProductOrder(productId: string): void;
     clearOrder(list: IOrder[]): void;
     getOrder(productId: string): IOrder[];
-    checkValidation(data: IUser): boolean;
+    checkValidation(data: IOrderForm): boolean;
+}
+
+export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+
+export interface IApi {
+    baseUrl: string;
+    get<T>(uri: string): Promise<T>;
+    post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
