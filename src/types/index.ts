@@ -7,16 +7,23 @@ export interface IProduct {
     image: string;
 }
 
+export interface IAppState {
+    catalog: IProduct[];
+    basket: string[];
+    preview: string | null;
+    order: IOrder | null;
+}
+
 export interface IOrderForm {
     method: string; 
     address: string;
     email: string;
-    telephone: number;
+    telephone: string;
 }
 
 export interface IOrder extends IOrderForm {
-    id: string;
-    total: number;
+    total: string;
+    items: string[];
 }
 
 export interface IItems {

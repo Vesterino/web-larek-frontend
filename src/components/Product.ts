@@ -10,70 +10,76 @@ interface IProductActions {
 
 export class Product extends Component<IProduct> {
     protected events: IEvents;
-    protected _product: HTMLTemplateElement;
-    protected _productCategory: HTMLElement;
-    protected _productTitle: HTMLElement;
-    protected _productImage: HTMLImageElement;
-    protected _productPrice: HTMLElement;
-    protected _productDescription: HTMLElement;
-    protected productId: string;
 
-    constructor(protected container: HTMLElement, events: IEvents ) {
+    protected _category: HTMLElement;
+    protected _title: HTMLElement;
+    protected _image: HTMLImageElement;
+    protected _price: HTMLElement;
+    protected _button: HTMLButtonElement;
+    protected _description?: HTMLElement;
+    protected _id: string;
+
+    constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions ) {
         super(container);
         this.events = events;
 
-        this._productCategory = ensureElement<HTMLElement>('.card__category', container);
-        this._productTitle = ensureElement<HTMLElement>('.card__title', container);
-        this._productImage = ensureElement<HTMLImageElement>('.card__image', container);
-        this._productPrice = ensureElement<HTMLElement>('.card__price', container);
+        this._category = ensureElement<HTMLElement>('.card__category', container);
+        this._title = ensureElement<HTMLElement>('.card__title', container);
+        this._image = ensureElement<HTMLImageElement>('.card__image', container);
+        this._price = ensureElement<HTMLElement>('.card__price', container);
+        this._description = container.querySelector<HTMLElement>('.card__text');
 
-        this.container.addEventListener('click', () => {
-            this.events.emit('product:select', { product: this })
-        })
+        if (actions?.onClick) {
+            if (this._button) {
+                this._button.addEventListener('click', actions.onClick);
+            } else {
+                container.addEventListener('click', actions.onClick);
+            }
+        }
     }
     
     set productCategory(value: string) {
-        this.setText(this._productCategory, value)
+        this.setText(this._category, value)
 
     switch (value) {
         case 'софт-скил':
-            this._productCategory.classList.add('card__category_soft');
+            this._category.classList.add('card__category_soft');
             break;
         case 'хард-скил':
-            this._productCategory.classList.add('card__category_hard');
+            this._category.classList.add('card__category_hard');
             break;
         case 'другое':
-            this._productCategory.classList.add('card__category_other');
+            this._category.classList.add('card__category_other');
             break;
         case 'дополнительное':
-            this._productCategory.classList.add('card__category_additional')
+            this._category.classList.add('card__category_additional')
             break;
         case 'кнопка':
-            this._productCategory.classList.add('card__category_button');
+            this._category.classList.add('card__category_button');
             break;
         default:
-            this._productCategory.classList.add('card__category')
+            this._category.classList.add('card__category')
         }
     }
 
     set productTitle(value: string) {
-        this.setText(this._productTitle, value)
+        this.setText(this._title, value)
     }
 
     set productImage(value: string) {
-        this.setImage(this._productImage, `${CDN_URL}${value}`, this.productTitle)
+        this.setImage(this._image, `${CDN_URL}${value}`, this.productTitle)
     }
 
     set productPrice(value: number) {
         if (isEmpty(value)) {
-            this.setText(this._productPrice, 'Бесценно')
+            this.setText(this._price, 'Бесценно')
         } else {
-            this.setText(this._productPrice, `${value} синапсов`);
+            this.setText(this._price, `${value} синапсов`);
         }
     }
 
     set productDescription(value: string) {
-        this.setText(this._productDescription, value);
+        this.setText(this._description, value);
     }
 
     render(productData: Partial<IProduct>): HTMLElement {
@@ -81,7 +87,6 @@ export class Product extends Component<IProduct> {
         this.productTitle = productData.title;
         this.productImage = productData.image;
         this.productPrice = productData.price;
-        this.productDescription = productData.description;
 
         return this.container;
     }

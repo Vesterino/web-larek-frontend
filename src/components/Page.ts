@@ -3,7 +3,7 @@ import { Component } from "./base/Component";
 import { IEvents } from "./base/events";
 
 interface IPage {
-    counter: number
+    counter: number;
     catalog: HTMLElement[];
     locked: boolean;
 }

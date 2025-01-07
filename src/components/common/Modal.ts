@@ -6,7 +6,7 @@ interface IModalData {
     content: HTMLElement;
 }
 
-export class Modal extends Component<IModalData> {
+export class Modal<T> extends Component<IModalData> {
     protected _closeButton: HTMLButtonElement;
     protected _content: HTMLElement;
 
@@ -18,7 +18,7 @@ export class Modal extends Component<IModalData> {
 
         this._closeButton.addEventListener('click', this.close.bind(this));
         this.container.addEventListener('click', this.close.bind(this));
-        this._content.addEventListener('click', (event) => event.stopPropagation);
+        this._content.addEventListener('click', (event) => event.stopPropagation());
     }
 
     set content(value: HTMLElement) {
