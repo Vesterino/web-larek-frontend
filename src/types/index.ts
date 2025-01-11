@@ -11,20 +11,24 @@ export interface IAppState {
     catalog: IProduct[];
     basket: string[];
     preview: string | null;
-    order: IOrder | null;
+    order: IOrder
 }
 
 export interface IOrderForm {
-    method: string; 
+    method?: 'card' | 'cash'; 
     address: string;
-    email: string;
-    telephone: string;
 }
 
-export interface IOrder extends IOrderForm {
-    total: string;
+export interface IContactsForm {
+    email: string;
+    phone: string;
+}
+
+export interface IOrder extends IOrderForm, IContactsForm {
     items: string[];
 }
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IItems {
     items: IProduct[];
