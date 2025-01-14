@@ -17,7 +17,7 @@ export class CatalogProduct extends Component<IProduct> {
     protected _image: HTMLImageElement;
     protected _price: HTMLElement;
 
-    constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions ) {
+    constructor(protected container: HTMLElement, events: IEvents ) {
         super(container);
         this.containerElement = container;
         this.events = events;
@@ -94,6 +94,7 @@ export class ModalProduct extends Component<IProduct> {
     image: string;
     price: number;
     description: string;
+    id: string;
 
     constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions ) {
         super(container);
@@ -155,6 +156,7 @@ export class ModalProduct extends Component<IProduct> {
     set productPrice(value: number) {
         if (isEmpty(value)) {
             this.setText(this._price, 'Бесценно')
+            this._button.disabled = true;
         } else {
             this.setText(this._price, `${value} синапсов`);
         }

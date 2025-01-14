@@ -1,6 +1,7 @@
 import { createElement, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { EventEmitter } from "../base/events";
+import { EventEmitter, IEvents } from "../base/events";
+import { AppState } from "../AppData";
 
 interface IBasketView {
     items: HTMLElement[];
@@ -9,18 +10,12 @@ interface IBasketView {
 }
 
 export class Basket extends Component<IBasketView> {
-    protected _title: HTMLElement;
     protected _list: HTMLElement;
     protected _total: HTMLElement;
     protected _button: HTMLElement;
 
     constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
-
-        if(!container) {
-            console.error('Контейнер корзины не найден!');
-            return;
-        }
 
         this._list = ensureElement<HTMLElement>('.basket__list', this.container);
         this._total = this.container.querySelector('.basket__price');
@@ -33,6 +28,7 @@ export class Basket extends Component<IBasketView> {
         }
 
         this.items = [];
+        this.availability = [];
     }
 
     get containerElement(): HTMLElement {
@@ -49,11 +45,11 @@ export class Basket extends Component<IBasketView> {
         }
     }
 
-    set selected(items: string[]) {
-        if (items.length) {
-            this.setDisabled(this._button, false);
-        } else {
+    set availability(items: string[]) {
+        if (!items.length) {
             this.setDisabled(this._button, true);
+        } else {
+            this.setDisabled(this._button, false);
         }
     }
 
@@ -66,4 +62,37 @@ export class Basket extends Component<IBasketView> {
             }
         }
     }
+
+    get total() {
+        return this.total;
+    }
 }
+
+export interface IBasketItem {
+    index: number;
+    title: string;
+    price: number;
+}
+
+export class BasketItem extends Component<IBasketItem> {
+    protected _index: HTMLElement;
+    protected _title: HTMLElement;
+    protected _price: HTMLElement;
+
+    constructor(container: HTMLElement, private events: EventEmitter) {
+        super(container);
+
+        this._index = container.querySelector('.basket__item-index');
+        this._title = container.querySelector('.card__title');
+        this._price = container.querySelector('.card__price');
+    }
+
+    render(item: IBasketItem): HTMLElement {
+
+        this._index.textContent = String(item.index);
+        this._title.textContent = item.title;
+        this._price.textContent = `${item.price} синапсов`
+
+        return this.container;
+        }
+    }
