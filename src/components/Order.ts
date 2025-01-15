@@ -33,7 +33,7 @@ export class Order extends Form<IOrderForm> {
         if (this._selectedMethod === value) return;
 
         this._selectedMethod = value;
-        this.appData.setOrderField('method', value);
+        this.appData.setOrderField('payment', value);
         this.appData.validateOrder();
 
         this.container.querySelectorAll('.button_alt').forEach((button) => button.classList.remove('button_alt-active'));

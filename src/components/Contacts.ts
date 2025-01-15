@@ -12,7 +12,7 @@ export class Contacts extends Form<IContactsForm> {
         this._button = container.querySelector('.contacts__button');
 
         this._button.addEventListener('click', () => {
-            events.emit('success:open')
+            events.emit('order:submit')
         })
     }
 
@@ -23,5 +23,4 @@ export class Contacts extends Form<IContactsForm> {
     set phone(value: string) {
         (this.container.elements.namedItem('phone') as HTMLInputElement).value = value;
     }
-    
 }

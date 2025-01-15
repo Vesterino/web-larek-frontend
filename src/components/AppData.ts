@@ -14,7 +14,7 @@ export class AppState extends Model<IAppState> {
     basket: IProduct[] = [];
     catalog: ProductItem[];
     order: IOrder = {
-        method: undefined,
+        payment: undefined,
         address: '',
         email: '',
         phone: '',
@@ -33,16 +33,26 @@ export class AppState extends Model<IAppState> {
         this.emitChanges('products:changed', { catalog: this.catalog });
     }
 
+    clearBasket() {
+        this.basket = [];
+        this.events.emit('basket:changed');
+    }
+
     getCatalog(): ProductItem[] {
         return this.catalog;
     }
 
     addToBasket(product: IProduct) {
         this.basket.push(product);
+        this.events.emit('basket.changed')
     }
 
     getBasket() {
         return this.basket;
+    }
+
+    getBasketTotal(): number {
+        return this.basket.reduce((sum, item) => sum + (item.price || 0), 0)
     }
 
     removeIsBasket(productId: string) {
@@ -75,14 +85,26 @@ export class AppState extends Model<IAppState> {
         this.emitChanges('contacts:changed', this.contacts);
     }
 
+    // getOrder(): IOrder {
+    //     return {
+    //         method: this.order.method,
+    //         address: this.order.address,
+    //         email: this.contacts.email,
+    //         phone: this.contacts.phone,
+    //         items: this.basket
+    //     }
+    // }
+
     validateOrder() {
         const errors: typeof this.formErrors = {};
-        if (!this.order.method) {
-            errors.method = 'Необходимо выбрать способ оплаты';
+
+        if (!this.order.payment) {
+            errors.payment = 'Необходимо выбрать способ оплаты';
         }
         if (!this.order.address) {
             errors.address = 'Необходимо указать адрес';
         }
+        
         this.formErrors = errors;
         this.events.emit('formErrors:change', this.formErrors);
         return Object.keys(errors).length === 0;

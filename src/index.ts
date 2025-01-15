@@ -1,7 +1,7 @@
 import './scss/styles.scss';
 import { Api } from './components/base/api'
-import { API_URL } from './utils/constants';
-import { IContactsForm, IItems, IOrder, IOrderData, IOrderForm, IProduct } from './types';
+import { API_URL, CDN_URL } from './utils/constants';
+import { IContactsForm, IItems, IOrder, IOrderForm, IOrderResults, IProduct } from './types';
 import { ProductData } from './components/ProductsData';
 import { EventEmitter } from './components/base/events';
 import { CatalogProduct, ModalProduct } from './components/Product';
@@ -12,28 +12,38 @@ import { AppState, ProductItem } from './components/AppData';
 import { Basket, BasketItem } from './components/common/Basket';
 import { Order } from './components/Order';
 import { Contacts } from './components/Contacts';
+import { Success } from './components/common/Success';
+import { LarekAPI } from './components/LarekAPI';
 
 const events = new EventEmitter();
-const api = new Api(API_URL)
+const api = new LarekAPI(CDN_URL, API_URL)
 
+// Шаблоны
 const cardTemplate = ensureElement<HTMLTemplateElement>('#card-catalog')
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const productBasket = ensureElement<HTMLTemplateElement>('#card-basket');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
+// Модель данных приложения
 const appData = new AppState({}, events);
 
+// Глобальные контейнеры
 const page = new Page(document.body, events)
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events)
 
+// Переиспользуемые части интерфейса
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-
 const productsData = new ProductData(events)
 const order = new Order(cloneTemplate(orderTemplate), events, appData);
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
+const success = new Success(cloneTemplate(successTemplate), {
+    onClick: () => modal.close()
+})
 
+// Получили список товаров с сервера
 api.get<IItems>('/product')
     .then(data => {
         productsData.products = data.items;
@@ -43,6 +53,7 @@ api.get<IItems>('/product')
         console.error('Ошибка:', error);
     });
 
+// Изменились товары в каталоге
 events.on('products:changed', () => {
     const productsArray = productsData.products.map((product) => {
         const productInstant = new CatalogProduct(cloneTemplate(cardTemplate), events);
@@ -64,11 +75,36 @@ events.on('basket:open', () => {
     modal.open();
 })
 
+// Отправка форм и заказа на сервер
+events.on('order:submit', () => {
+    const orderData = {
+        ...appData.order,
+        ...appData.contacts,
+        items: appData.getBasket().map(item => item.id),
+        total: appData.getBasketTotal(),
+    }
+
+    api.orderProducts(orderData)
+        .then((result: IOrderResults) => {
+                    appData.clearBasket();
+                    events.emit('basket:changed');
+            modal.render({
+                content: success.render({
+                    total: result.total
+                })
+            })
+        })
+        .catch(err => {
+            console.error(err);
+        })
+    });
+
+// Изменение валидации форм
 events.on('formErrors:change', (errors: Partial<IOrder> & Partial<IContactsForm>) => {
-    const { method, address, email, phone } = errors;
+    const { payment, address, email, phone } = errors;
     
-    const isOrderValid = !method && !address;
-    const orderErrors = Object.values({address}).filter(i => !!i).join('; ');
+    const isOrderValid = !payment && !address;
+    const orderErrors = Object.values({payment, address}).filter(i => !!i).join('; ');
     
     const isContactsValid = !email && !phone;
     const contactsError = Object.values({email, phone}).filter(i => !!i).join('; ');
@@ -92,28 +128,31 @@ events.on(/^contacts\..*:change/, (data: { field: keyof IContactsForm, value: st
     appData.validateContacts();
 })
 
+// Открытие первого модального окна заказа с формами
 events.on('order:open', () => {
     modal.render({
         content: order.render({
-            method: undefined,
-            address: '',
-            valid: false,
+            payment: appData.order.payment,
+            address: appData.order.address,
+            valid: appData.validateOrder(),
             errors: []
         })
     })
 })
 
+// Открытие второго модального окна заказа с формами
 events.on('contacts:open', () => {
     modal.render({
         content: contacts.render({
-            email: '',
-            phone: '',
-            valid: false,
+            email: appData.contacts.email,
+            phone: appData.contacts.phone,
+            valid: appData.validateContacts(),
             errors: []
         })
     })
 })
 
+// Открытие модального окна с детальной информацией товара
 events.on('preview:changed', (item: ProductItem) => {
         if (!item) {
             modal.close();
@@ -185,6 +224,7 @@ events.on('preview:changed', (item: ProductItem) => {
 //         page.counter = basketItems.length;
 //     })
 
+// Изменение корзины при определенных действиях
 events.on('basket:changed', () => {
     const basketItems = appData.getBasket();
 
