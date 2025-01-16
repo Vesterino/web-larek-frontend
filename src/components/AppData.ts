@@ -44,7 +44,7 @@ export class AppState extends Model<IAppState> {
 
     addToBasket(product: IProduct) {
         this.basket.push(product);
-        this.events.emit('basket.changed')
+        this.events.emit('basket:changed')
     }
 
     getBasket() {
@@ -85,16 +85,6 @@ export class AppState extends Model<IAppState> {
         this.emitChanges('contacts:changed', this.contacts);
     }
 
-    // getOrder(): IOrder {
-    //     return {
-    //         method: this.order.method,
-    //         address: this.order.address,
-    //         email: this.contacts.email,
-    //         phone: this.contacts.phone,
-    //         items: this.basket
-    //     }
-    // }
-
     validateOrder() {
         const errors: typeof this.formErrors = {};
 
@@ -104,7 +94,7 @@ export class AppState extends Model<IAppState> {
         if (!this.order.address) {
             errors.address = 'Необходимо указать адрес';
         }
-        
+
         this.formErrors = errors;
         this.events.emit('formErrors:change', this.formErrors);
         return Object.keys(errors).length === 0;

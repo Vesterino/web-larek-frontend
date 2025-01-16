@@ -43,7 +43,7 @@ const success = new Success(cloneTemplate(successTemplate), {
     onClick: () => modal.close()
 })
 
-// Получили список товаров с сервера
+// Получение список товаров с сервера
 api.get<IItems>('/product')
     .then(data => {
         productsData.products = data.items;
@@ -128,7 +128,7 @@ events.on(/^contacts\..*:change/, (data: { field: keyof IContactsForm, value: st
     appData.validateContacts();
 })
 
-// Открытие первого модального окна заказа с формами
+// Открытие модального окна выбора способа оплаты и ввода адреса доставки
 events.on('order:open', () => {
     modal.render({
         content: order.render({
@@ -140,7 +140,7 @@ events.on('order:open', () => {
     })
 })
 
-// Открытие второго модального окна заказа с формами
+// Открытие модального окна контактных данных
 events.on('contacts:open', () => {
     modal.render({
         content: contacts.render({
@@ -193,36 +193,6 @@ events.on('preview:changed', (item: ProductItem) => {
         })
     }
 )
-
-// events.on('basket:changed', () => {
-//     const basketItems = appData.getBasket();
-
-//     basket.items = basketItems.map((item, index) => {
-//         const template = productBasket;
-//         const element = template.content.cloneNode(true) as HTMLElement;
-
-//         const productBasketIndex = element.querySelector('.basket__item-index');
-//         const productBasketTitle = element.querySelector('.card__title');
-//         const productBasketPrice = element.querySelector('.card__price');
-//         const deleteBasketButton = element.querySelector('.basket__item-delete');
-        
-//         productBasketIndex.textContent = `${index + 1}`;
-//         productBasketTitle.textContent = item.title;
-//         productBasketPrice.textContent = `${item.price} синапсов`;
-
-//         deleteBasketButton.addEventListener('click', () => {
-//             appData.removeIsBasket(item);
-//             events.emit('basket:changed');
-//         })
-//         return element;
-//         })
-
-//         const total = basketItems.reduce((sum, item) => sum + item.price, 0);
-
-//         basket.availability = basketItems.map(item => item.id);
-//         basket.total = total;
-//         page.counter = basketItems.length;
-//     })
 
 // Изменение корзины при определенных действиях
 events.on('basket:changed', () => {

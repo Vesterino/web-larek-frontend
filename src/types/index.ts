@@ -32,7 +32,6 @@ export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IItems {
     items: IProduct[];
-    total: number | null;
 }
 
 export interface IProductsData {

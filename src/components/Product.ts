@@ -96,7 +96,7 @@ export class ModalProduct extends Component<IProduct> {
     description: string;
     id: string;
 
-    constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions ) {
+    constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions) {
         super(container);
         this.containerElement = container;
         this.events = events;
