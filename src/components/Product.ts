@@ -16,8 +16,15 @@ export class CatalogProduct extends Component<IProduct> {
     protected _title: HTMLElement;
     protected _image: HTMLImageElement;
     protected _price: HTMLElement;
+    protected _categoryColor = <Record<string, string>> {
+        "софт-скил": "soft",
+        "другое": "other",
+        "дополнительное": "additional",
+        "кнопка": "button",
+        "хард-скил": "hard"
+    }
 
-    constructor(protected container: HTMLElement, events: IEvents ) {
+    constructor(protected container: HTMLElement, events: IEvents) {
         super(container);
         this.containerElement = container;
         this.events = events;
@@ -27,84 +34,45 @@ export class CatalogProduct extends Component<IProduct> {
         this._image = ensureElement<HTMLImageElement>('.card__image', container);
         this._price = ensureElement<HTMLElement>('.card__price', container);
     }
+
+        set category(value: string) {
+            Object.values(this._categoryColor).forEach((colorClass) => {
+                this.toggleClass(this._category, `card__category_${colorClass}`, false)
+            })
+
+            this.setText(this._category, value)
+            this.toggleClass(this._category, `card__category_${this._categoryColor[value]}`, true)
+        }
     
-    set productCategory(value: string) {
-        this.setText(this._category, value)
-
-    switch (value) {
-        case 'софт-скил':
-            this._category.classList.add('card__category_soft');
-            break;
-        case 'хард-скил':
-            this._category.classList.add('card__category_hard');
-            break;
-        case 'другое':
-            this._category.classList.add('card__category_other');
-            break;
-        case 'дополнительное':
-            this._category.classList.add('card__category_additional')
-            break;
-        case 'кнопка':
-            this._category.classList.add('card__category_button');
-            break;
-        default:
-            this._category.classList.add('card__category')
+        set title(value: string) {
+            this.setText(this._title, value)
+        }
+    
+        set image(value: string) {
+            this.setImage(this._image, `${CDN_URL}${value}`, this.title)
+        }
+    
+        set price(value: number) {
+            if (isEmpty(value)) {
+                this.setText(this._price, 'Бесценно')
+            } else {
+                this.setText(this._price, `${value} синапсов`);
+            }
+        }
+    
+        render(productData: Partial<IProduct>): HTMLElement {
+            super.render(productData);
+            return this.containerElement;
         }
     }
 
-    set productTitle(value: string) {
-        this.setText(this._title, value)
-    }
-
-    set productImage(value: string) {
-        this.setImage(this._image, `${CDN_URL}${value}`, this.productTitle)
-    }
-
-    set productPrice(value: number) {
-        if (isEmpty(value)) {
-            this.setText(this._price, 'Бесценно')
-        } else {
-            this.setText(this._price, `${value} синапсов`);
-        }
-    }
-
-    render(productData: Partial<IProduct>): HTMLElement {
-        this.productCategory = productData.category;
-        this.productTitle = productData.title;
-        this.productImage = productData.image;
-        this.productPrice = productData.price;
-
-        return this.containerElement;
-    }
-}
-
-export class ModalProduct extends Component<IProduct> {
-    protected events: IEvents;
-    containerElement: HTMLElement;
-
-    protected _category: HTMLElement;
-    protected _title: HTMLElement;
-    protected _image: HTMLImageElement;
-    protected _price: HTMLElement;
+export class ModalProduct extends CatalogProduct {
     protected _button: HTMLButtonElement;
     protected _description: HTMLElement;
-    
-    category: string;
-    title: string;
-    image: string;
-    price: number;
-    description: string;
-    id: string;
 
     constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions) {
-        super(container);
-        this.containerElement = container;
-        this.events = events;
+        super(container, events);
 
-        this._category = ensureElement<HTMLElement>('.card__category', container);
-        this._title = ensureElement<HTMLElement>('.card__title', container);
-        this._image = ensureElement<HTMLImageElement>('.card__image', container);
-        this._price = ensureElement<HTMLElement>('.card__price', container);
         this._button = ensureElement<HTMLButtonElement>('.card__button', container);
         this._description = ensureElement<HTMLElement>('.card__text', container);
 
@@ -117,62 +85,12 @@ export class ModalProduct extends Component<IProduct> {
         }
     }
 
-    set productCategory(value: string) {
-        this._category.classList.remove(
-            'card__category_other',
-        );
-        
-        this.setText(this._category, value)
-
-    switch (value) {
-        case 'софт-скил':
-            this._category.classList.add('card__category_soft');
-            break;
-        case 'хард-скил':
-            this._category.classList.add('card__category_hard');
-            break;
-        case 'другое':
-            this._category.classList.add('card__category_other');
-            break;
-        case 'дополнительное':
-            this._category.classList.add('card__category_additional')
-            break;
-        case 'кнопка':
-            this._category.classList.add('card__category_button');
-            break;
-        default:
-            this._category.classList.add('card__category')
-        }
-    }
-
-    set productTitle(value: string) {
-        this.setText(this._title, value)
-    }
-
-    set productImage(value: string) {
-        this.setImage(this._image, `${CDN_URL}${value}`, this.productTitle)
-    }
-
-    set productPrice(value: number) {
-        if (isEmpty(value)) {
-            this.setText(this._price, 'Бесценно')
-            this._button.disabled = true;
-        } else {
-            this.setText(this._price, `${value} синапсов`);
-        }
-    }
-
-    set productDescription(value: string) {
+    set description(value: string) {
         this.setText(this._description, value);
     }
 
     render(productData: Partial<IProduct>): HTMLElement {
-        this.productCategory = productData.category;
-        this.productTitle = productData.title;
-        this.productImage = productData.image;
-        this.productPrice = productData.price;
-        this.productDescription = productData.description;
-
+        super.render(productData);
         return this.containerElement;
     }
 }

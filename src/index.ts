@@ -9,10 +9,10 @@ import { cloneTemplate, createElement, ensureElement } from './utils/utils';
 import { Page } from './components/Page';
 import { Modal } from './components/common/Modal';
 import { AppState, ProductItem } from './components/AppData';
-import { Basket, BasketItem } from './components/common/Basket';
+import { Basket, BasketItem } from './components/Basket';
 import { Order } from './components/Order';
 import { Contacts } from './components/Contacts';
-import { Success } from './components/common/Success';
+import { Success } from './components/Success';
 import { LarekAPI } from './components/LarekAPI';
 
 const events = new EventEmitter();
@@ -169,11 +169,13 @@ events.on('preview:changed', (item: ProductItem) => {
                 }
             })
 
-            modalCard.productCategory = result.category;
-            modalCard.productTitle = result.title;
-            modalCard.productImage = result.image;
-            modalCard.productPrice = result.price;
-            modalCard.productDescription = result.description;
+            modalCard.category = result.category;
+            modalCard.title = result.title;
+            modalCard.image = result.image;
+            modalCard.price = result.price;
+            modalCard.description = result.description;
+
+            // const isInBasket = appData.getBasket().some((basketItem) => basketItem.id === result.id)
 
             modalCard.render({
                 category: item.category,
@@ -182,6 +184,10 @@ events.on('preview:changed', (item: ProductItem) => {
                 price: item.price,
                 description: item.description,
             });
+
+            const addButton = modalCard.containerElement.querySelector('.card__button');
+
+            
 
             modal.render({
                 content: modalCard.containerElement

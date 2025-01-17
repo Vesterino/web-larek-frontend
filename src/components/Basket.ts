@@ -1,7 +1,7 @@
-import { createElement, ensureElement } from "../../utils/utils";
-import { Component } from "../base/Component";
-import { EventEmitter, IEvents } from "../base/events";
-import { AppState } from "../AppData";
+import { createElement, ensureElement } from "../utils/utils";
+import { Component } from "./base/Component";
+import { EventEmitter, IEvents } from "./base/events";
+import { AppState } from "./AppData";
 
 interface IBasketView {
     items: HTMLElement[];
@@ -46,19 +46,15 @@ export class Basket extends Component<IBasketView> {
     }
 
     set availability(items: string[]) {
-        if (!items.length) {
-            this.setDisabled(this._button, true);
-        } else {
-            this.setDisabled(this._button, false);
-        }
+            this.setDisabled(this._button, !items.length);
     }
 
     set total(value: number) {
         if (this._total) {
             if (value > 0) {
-                this._total.textContent = `${value} синапсов`;
+                this.setText(this._total, `${value} синапсов`);
             } else {
-                this._total.textContent = '0 синапсов';
+                this.setText(this._total, '0 синапсов');
             }
         }
     }

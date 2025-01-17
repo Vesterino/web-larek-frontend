@@ -6,21 +6,23 @@ import { AppState } from "./AppData";
 export class Order extends Form<IOrderForm> {
     protected _selectedMethod: 'card' | 'cash' | undefined;
     protected _button: HTMLButtonElement;
+    protected _methodButtons: NodeListOf<HTMLButtonElement>;
 
     constructor(container: HTMLFormElement, events: IEvents, private appData: AppState) {
         super(container, events);
+        this._methodButtons = container.querySelectorAll('.button_alt');
+
         this.init();
 
         this._button = container.querySelector('.order__button');
 
-            this._button.addEventListener('click', () => {
-                events.emit('contacts:open');
-            });
+        this._button.addEventListener('click', () => {
+            events.emit('contacts:open');
+        });
     }
 
     init() {
-        const methodButtons = this.container.querySelectorAll('.button_alt') as NodeListOf<HTMLButtonElement>
-        methodButtons.forEach((button) => {
+        this._methodButtons.forEach((button) => {
             button.addEventListener('click', () => {
                 this.onMethodButtonClick(button);
             });
@@ -36,19 +38,17 @@ export class Order extends Form<IOrderForm> {
         this.appData.setOrderField('payment', value);
         this.appData.validateOrder();
 
-        this.container.querySelectorAll('.button_alt').forEach((button) => button.classList.remove('button_alt-active'));
-        button.classList.add('button_alt-active');
+        this._methodButtons.forEach((btn) => this.toggleClass(btn, 'button_alt-active', btn === button));
     }
-
 
     set method(value: 'card' | 'cash') {
         this._selectedMethod = value;
 
-        this.container.querySelectorAll('.button_alt').forEach((button) => button.classList.remove('button_alt-active'));
+        this._methodButtons.forEach((button) => this.toggleClass(button, 'button_alt-active', false));
 
         const selectedButton = this.container.querySelector(`[name="${value}"]`) as HTMLButtonElement;
         if (selectedButton) {
-            selectedButton.classList.add('button_alt-active');
+            this.toggleClass(selectedButton, 'button_alt-active', true);
         }
     }
 
