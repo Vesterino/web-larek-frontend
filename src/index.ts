@@ -161,13 +161,23 @@ events.on('preview:changed', (item: ProductItem) => {
 
         api.get<ModalProduct>(`/product/${item.id}`)
         .then((result) => {
-            const modalCard = new ModalProduct(cloneTemplate(cardPreviewTemplate), events, {
-                onClick: () => {
+            const modalCard = new ModalProduct(cloneTemplate(cardPreviewTemplate), events)
+
+            const isInBasket = appData.getBasket().some((basketItem) => basketItem.id === result.id)
+            const addButton = modalCard.containerElement.querySelector('.card__button');
+
+            if (isInBasket) {
+                addButton.setAttribute('disabled', 'true');
+                addButton.textContent = 'В корзине'
+            } else {
+                addButton.removeAttribute('disabled');
+                addButton.textContent = 'В корзину';
+                addButton.addEventListener('click', () => {
                     appData.addToBasket(result);
                     events.emit('basket:changed');
                     modal.close();
-                }
-            })
+                })
+            };
 
             modalCard.category = result.category;
             modalCard.title = result.title;
@@ -175,7 +185,6 @@ events.on('preview:changed', (item: ProductItem) => {
             modalCard.price = result.price;
             modalCard.description = result.description;
 
-            // const isInBasket = appData.getBasket().some((basketItem) => basketItem.id === result.id)
 
             modalCard.render({
                 category: item.category,
@@ -184,10 +193,6 @@ events.on('preview:changed', (item: ProductItem) => {
                 price: item.price,
                 description: item.description,
             });
-
-            const addButton = modalCard.containerElement.querySelector('.card__button');
-
-            
 
             modal.render({
                 content: modalCard.containerElement

@@ -102,12 +102,18 @@ export class AppState extends Model<IAppState> {
 
     validateContacts() {
         const errors: typeof this.formErrors = {};
-        if (!this.contacts.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(this.contacts.email)) {
             errors.email = 'Необходимо указать email';
         }
-        if (!this.contacts.phone) {
+        
+        const phoneRegex = /^\+7[0-9]{10}$/;
+
+        if (!phoneRegex.test(this.contacts.phone)) {
             errors.phone = 'Необходимо указать номер телефона'
         }
+
         this.formErrors = errors;
         this.events.emit('formErrors:change', this.formErrors);
         return Object.keys(errors).length === 0;

@@ -372,6 +372,14 @@ type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 - _title: HTMLElement - элемент разметки для установки в карточку товара названия
 - _image: HTMLImageElement - элемент разметки для установки в карточку товара изображения
 - _price: HTMLElement - элемент разметки для установки в карточку товара цену
+- protected _categoryColor = <Record<string, string>> {
+        "софт-скил": "soft",
+        "другое": "other",
+        "дополнительное": "additional",
+        "кнопка": "button",
+        "хард-скил": "hard"
+    } - цвета для элементов разметки категории карточки товаров
+- protected _button: HTMLButtonElement - кнопка модального окна для добавления в корзину
 
 Методы:
 - render(productData: Partial<IProduct>): HTMLElement - метод возвращает полностью заполненный товар с установленными слушателями.
@@ -384,7 +392,6 @@ type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 `constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions)` - создает экземпляр класс, инициализируя контейнер для работы с DOM-элементами, объект для управления событиями, а также объект для работы с товаром (опционально) 
 
 Поля класса:
-- _button: HTMLButtonElement - кнопка модального окна для добавления в корзину
 - _description: HTMLElement - элемент разметки для установки в модальное окно карточки товара описание
 
 Методы:

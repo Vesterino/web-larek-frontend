@@ -23,6 +23,7 @@ export class CatalogProduct extends Component<IProduct> {
         "кнопка": "button",
         "хард-скил": "hard"
     }
+    protected _button: HTMLButtonElement;
 
     constructor(protected container: HTMLElement, events: IEvents) {
         super(container);
@@ -55,6 +56,7 @@ export class CatalogProduct extends Component<IProduct> {
         set price(value: number) {
             if (isEmpty(value)) {
                 this.setText(this._price, 'Бесценно')
+                this.setDisabled(this._button, true);
             } else {
                 this.setText(this._price, `${value} синапсов`);
             }
@@ -67,8 +69,8 @@ export class CatalogProduct extends Component<IProduct> {
     }
 
 export class ModalProduct extends CatalogProduct {
-    protected _button: HTMLButtonElement;
     protected _description: HTMLElement;
+    id: string;
 
     constructor(protected container: HTMLElement, events: IEvents, actions?: IProductActions) {
         super(container, events);

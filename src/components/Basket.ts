@@ -85,9 +85,9 @@ export class BasketItem extends Component<IBasketItem> {
 
     render(item: IBasketItem): HTMLElement {
 
-        this._index.textContent = String(item.index);
-        this._title.textContent = item.title;
-        this._price.textContent = `${item.price} синапсов`
+        this.setText(this._index, String(item.index));
+        this.setText(this._title, item.title);
+        this.setText(this._price, `${item.price} синапсов`);
 
         return this.container;
         }
