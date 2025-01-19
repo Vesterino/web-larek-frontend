@@ -286,7 +286,7 @@ type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 #### Класс Basket
 Расширяет класс Component. Отвечает за модальное окно корзины, отображающее элементы списка товаров, цены и кнопки "оформления".
 
-`constructor(container: HTMLElement, protected events: EventEmitter)` - Создаёт экземпляр класса, предназначенного для работы с интерфейсом, предоставляя доступ к корневому контейнеру и системе событий.
+`constructor(container: HTMLElement, protected events: EventEmitter, actions?: IBasketActions)` - Создаёт экземпляр класса, предназначенного для работы с интерфейсом, предоставляя доступ к корневому контейнеру и системе событий.
 
 Поля класса:
 - _list: HTMLElement - список товаров в корзине

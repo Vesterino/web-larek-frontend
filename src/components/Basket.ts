@@ -9,6 +9,10 @@ interface IBasketView {
     selected: string[];
 }
 
+interface IBasketActions {
+    onClick: (event: MouseEvent) => void;
+}
+
 export class Basket extends Component<IBasketView> {
     protected _list: HTMLElement;
     protected _total: HTMLElement;
@@ -74,13 +78,23 @@ export class BasketItem extends Component<IBasketItem> {
     protected _index: HTMLElement;
     protected _title: HTMLElement;
     protected _price: HTMLElement;
+    protected _button: HTMLButtonElement;
 
-    constructor(container: HTMLElement, private events: EventEmitter) {
+    constructor(container: HTMLElement, private events: EventEmitter, actions?: IBasketActions) {
         super(container);
 
         this._index = container.querySelector('.basket__item-index');
         this._title = container.querySelector('.card__title');
         this._price = container.querySelector('.card__price');
+        this._button = container.querySelector('.basket__item-delete');
+
+        if (actions?.onClick) {
+            if (this._button) {
+                this._button.addEventListener('click', actions.onClick);
+            } else {
+                container.addEventListener('click', actions.onClick);
+            }
+        }
     }
 
     render(item: IBasketItem): HTMLElement {

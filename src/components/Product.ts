@@ -23,7 +23,7 @@ export class CatalogProduct extends Component<IProduct> {
         "кнопка": "button",
         "хард-скил": "hard"
     }
-    protected _button: HTMLButtonElement;
+    _button: HTMLButtonElement;
 
     constructor(protected container: HTMLElement, events: IEvents) {
         super(container);

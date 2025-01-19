@@ -161,22 +161,20 @@ events.on('preview:changed', (item: ProductItem) => {
 
         api.get<ModalProduct>(`/product/${item.id}`)
         .then((result) => {
-            const modalCard = new ModalProduct(cloneTemplate(cardPreviewTemplate), events)
-
-            const isInBasket = appData.getBasket().some((basketItem) => basketItem.id === result.id)
-            const addButton = modalCard.containerElement.querySelector('.card__button');
-
-            if (isInBasket) {
-                addButton.setAttribute('disabled', 'true');
-                addButton.textContent = 'В корзине'
-            } else {
-                addButton.removeAttribute('disabled');
-                addButton.textContent = 'В корзину';
-                addButton.addEventListener('click', () => {
+            const modalCard = new ModalProduct(cloneTemplate(cardPreviewTemplate), events, { onClick: () => {
                     appData.addToBasket(result);
                     events.emit('basket:changed');
                     modal.close();
-                })
+            }});
+
+            const isInBasket = appData.getBasket().some((basketItem) => basketItem.id === result.id);
+
+            if (isInBasket) {
+                modalCard.setDisabled(modalCard._button, true);
+                modalCard.setText(modalCard._button, 'В корзине');
+            } else {
+                modalCard.setDisabled(modalCard._button, false);
+                modalCard.setText(modalCard._button, 'В корзину');
             };
 
             modalCard.category = result.category;
@@ -210,19 +208,14 @@ events.on('basket:changed', () => {
     const basketItems = appData.getBasket();
 
     basket.items = basketItems.map((item, index) => {
-        const basketItem = new BasketItem(cloneTemplate(productBasket), events)
+        const basketItem = new BasketItem(cloneTemplate(productBasket), events, { onClick: () =>
+            appData.removeIsBasket(item.id)
+    })
 
         const element = basketItem.render({
             index: index + 1,
             title: item.title,
             price: item.price,
-        })
-
-        const deleteButtonItem = element.querySelector('.basket__item-delete');
-
-        deleteButtonItem.addEventListener('click', () => {
-            appData.removeIsBasket(item.id);
-            events.emit('basket:changed');
         })
         
         return element;
