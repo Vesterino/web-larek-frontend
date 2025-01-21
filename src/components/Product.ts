@@ -99,7 +99,7 @@ export class ModalProduct extends CatalogProduct {
         this._button.removeAttribute('disabled');
     }
 
-    setButtonText(value: string) {
+    setButtonText(value: unknown) {
         if (this._button) {
             this._button.textContent = String(value);
         }
