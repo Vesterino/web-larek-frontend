@@ -170,19 +170,12 @@ events.on('preview:changed', (item: ProductItem) => {
             const isInBasket = appData.getBasket().some((basketItem) => basketItem.id === result.id);
 
             if (isInBasket) {
-                modalCard.setDisabled(modalCard._button, true);
-                modalCard.setText(modalCard._button, 'В корзине');
+                modalCard.disableButton();
+                modalCard.setButtonText('В корзине');
             } else {
-                modalCard.setDisabled(modalCard._button, false);
-                modalCard.setText(modalCard._button, 'В корзину');
+                modalCard.enableButton();
+                modalCard.setButtonText('В корзину');
             };
-
-            modalCard.category = result.category;
-            modalCard.title = result.title;
-            modalCard.image = result.image;
-            modalCard.price = result.price;
-            modalCard.description = result.description;
-
 
             modalCard.render({
                 category: item.category,

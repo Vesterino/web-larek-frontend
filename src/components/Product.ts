@@ -23,7 +23,7 @@ export class CatalogProduct extends Component<IProduct> {
         "кнопка": "button",
         "хард-скил": "hard"
     }
-    _button: HTMLButtonElement;
+    protected _button: HTMLButtonElement;
 
     constructor(protected container: HTMLElement, events: IEvents) {
         super(container);
@@ -89,6 +89,20 @@ export class ModalProduct extends CatalogProduct {
 
     set description(value: string) {
         this.setText(this._description, value);
+    }
+
+    disableButton() {
+        this._button.setAttribute('disabled', 'true');
+    }
+
+    enableButton() {
+        this._button.removeAttribute('disabled');
+    }
+
+    setButtonText(value: string) {
+        if (this._button) {
+            this._button.textContent = String(value);
+        }
     }
 
     render(productData: Partial<IProduct>): HTMLElement {
